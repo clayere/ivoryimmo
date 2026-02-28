@@ -14,7 +14,7 @@ env/
 .venv/
 
 # Uploads (images locales — à gérer avec un service cloud en prod)
-static/uploads/*
+!static/uploads/
 !static/uploads/.gitkeep
 
 # OS
