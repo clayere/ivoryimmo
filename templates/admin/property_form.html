@@ -1,0 +1,224 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ action }} un bien{% endblock %}
+{% block page_title %}{{ action }} une propriété{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('admin_properties') }}" class="topbar-btn outline">← Retour</a>
+{% endblock %}
+
+{% block content %}
+<form method="POST"
+      action="{{ url_for('admin_property_edit', pid=prop.id) if prop else url_for('admin_property_new') }}"
+      enctype="multipart/form-data">
+
+  <div class="form-card">
+
+    <!-- ── Informations générales ── -->
+    <div class="form-section-title">Informations générales</div>
+
+    <div class="form-group">
+      <label>Titre du bien *</label>
+      <input type="text" name="title" required
+             value="{{ prop.title if prop else '' }}"
+             placeholder="Ex : Appartement Luxe Cocody"/>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label>Type de bien *</label>
+        <select name="type" required>
+          <option value="appartement" {{ 'selected' if prop and prop.type=='appartement' }}>Appartement</option>
+          <option value="studio"      {{ 'selected' if prop and prop.type=='studio' }}>Studio</option>
+          <option value="villa"       {{ 'selected' if prop and prop.type=='villa' }}>Villa</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Localisation *</label>
+        <input type="text" name="location" required
+               value="{{ prop.location if prop else '' }}"
+               placeholder="Ex : Cocody, Abidjan"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" rows="4"
+                placeholder="Décrivez le bien, ses atouts, son environnement…">{{ prop.description if prop else '' }}</textarea>
+    </div>
+
+    <!-- ── Caractéristiques ── -->
+    <div class="form-section-title">Caractéristiques</div>
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label>Surface</label>
+        <input type="text" name="surface"
+               value="{{ prop.surface if prop else '' }}"
+               placeholder="Ex : 120 m²"/>
+      </div>
+      <div class="form-group">
+        <label>Nombre de pièces</label>
+        <input type="text" name="pieces"
+               value="{{ prop.pieces if prop else '' }}"
+               placeholder="Ex : 4 pièces"/>
+      </div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group">
+        <label>Étage</label>
+        <input type="text" name="etage"
+               value="{{ prop.etage if prop else '' }}"
+               placeholder="Ex : 3ème étage"/>
+      </div>
+      <div class="form-group">
+        <label>Parking</label>
+        <input type="text" name="parking"
+               value="{{ prop.parking if prop else '' }}"
+               placeholder="Ex : 1 place"/>
+      </div>
+    </div>
+
+    <!-- ── Prix & disponibilité ── -->
+    <div class="form-section-title">Prix & Disponibilité</div>
+
+    <div class="form-group">
+      <label>Mode(s) de transaction *</label>
+      <div class="checkbox-group">
+        <label class="checkbox-item">
+          <input type="checkbox" name="modes" value="location"
+                 {{ 'checked' if not prop or 'location' in prop.modes }}/> Location
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="modes" value="vente"
+                 {{ 'checked' if prop and 'vente' in prop.modes }}/> Vente
+        </label>
+      </div>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label>Prix de location / mois</label>
+        <input type="text" name="prix_location"
+               value="{{ prop.prix_location if prop else '' }}"
+               placeholder="Ex : 350 000 FCFA/mois"/>
+      </div>
+      <div class="form-group">
+        <label>Prix de vente</label>
+        <input type="text" name="prix_vente"
+               value="{{ prop.prix_vente if prop else '' }}"
+               placeholder="Ex : 65 000 000 FCFA"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-item" style="font-size:0.88rem">
+        <input type="checkbox" name="disponible"
+               {{ 'checked' if not prop or prop.disponible }}/> Bien visible sur le site
+      </label>
+    </div>
+
+    <!-- ── Image ── -->
+    <div class="form-section-title">Image principale</div>
+
+    <div class="form-row-2">
+      <div>
+        <div class="form-group">
+          <label>URL d'image externe</label>
+          <input type="url" name="image_url" id="image_url"
+                 value="{{ prop.image if prop and prop.image and not prop.image.startswith('/static/') else '' }}"
+                 placeholder="https://images.unsplash.com/…"
+                 oninput="previewUrl(this.value)"/>
+        </div>
+        <p style="text-align:center;color:var(--muted);font-size:0.78rem;margin:8px 0">— ou —</p>
+        <div class="form-group">
+          <label>Uploader une image (PNG, JPG, WEBP — max 5 Mo)</label>
+          <div class="upload-zone" id="drop-zone"
+               onclick="document.getElementById('image_file').click()">
+            <div style="font-size:2rem">📁</div>
+            <p>Cliquez ou glissez une image ici</p>
+            <input type="file" id="image_file" name="image_file"
+                   accept="image/png,image/jpeg,image/webp"
+                   style="display:none" onchange="previewFile(this)"/>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;
+                       color:var(--muted);display:block;margin-bottom:10px">
+          Aperçu
+        </label>
+        <div id="preview-wrap" style="border:1px solid var(--border);border-radius:10px;
+             overflow:hidden;height:200px;display:flex;align-items:center;justify-content:center;
+             background:var(--dark4)">
+          {% if prop and prop.image %}
+          <img id="preview-img" src="{{ prop.image }}" alt="Preview"
+               style="width:100%;height:200px;object-fit:cover"/>
+          {% else %}
+          <span id="preview-placeholder" style="font-size:2rem;color:var(--muted)">🖼️</span>
+          <img id="preview-img" src="" alt="Preview"
+               style="width:100%;height:200px;object-fit:cover;display:none"/>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /form-card -->
+
+  <div class="form-actions">
+    <button type="submit" class="btn-primary">
+      {{ '✅ Enregistrer les modifications' if prop else '➕ Ajouter le bien' }}
+    </button>
+    <a href="{{ url_for('admin_properties') }}" class="btn-secondary">Annuler</a>
+  </div>
+
+</form>
+
+<script>
+  // Prévisualisation URL externe
+  function previewUrl(url) {
+    if (!url) return;
+    const img = document.getElementById('preview-img');
+    const ph  = document.getElementById('preview-placeholder');
+    img.src = url;
+    img.style.display = 'block';
+    if (ph) ph.style.display = 'none';
+    img.onerror = () => { img.style.display = 'none'; if (ph) ph.style.display = ''; };
+  }
+
+  // Prévisualisation fichier uploadé
+  function previewFile(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('preview-img');
+      const ph  = document.getElementById('preview-placeholder');
+      img.src = e.target.result;
+      img.style.display = 'block';
+      if (ph) ph.style.display = 'none';
+      // Vider l'URL externe pour ne pas créer de conflit
+      document.getElementById('image_url').value = '';
+      // Retour visuel sur la zone de drop
+      document.getElementById('drop-zone').style.borderColor = 'var(--gold)';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+
+  // Drag & drop
+  const dropZone = document.getElementById('drop-zone');
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag');
+    const fileInput = document.getElementById('image_file');
+    const dt = new DataTransfer();
+    dt.items.add(e.dataTransfer.files[0]);
+    fileInput.files = dt.files;
+    previewFile(fileInput);
+  });
+
+  // Init preview si URL existante
+  const existingUrl = document.getElementById('image_url').value;
+  if (existingUrl) previewUrl(existingUrl);
+</script>
+{% endblock %}

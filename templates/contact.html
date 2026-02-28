@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nous Contacter — IvoryImmo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <a href="{{ url_for('index') }}" class="nav-logo">Ivory<span>Immo</span><sup>CI</sup></a>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}">Accueil</a></li>
+      <li><a href="{{ url_for('services') }}">Nos Biens</a></li>
+      <li><a href="{{ url_for('equipe') }}">Notre Équipe</a></li>
+      <li><a href="{{ url_for('contact_page') }}" class="active nav-cta">Nous Contacter</a></li>
+    </ul>
+    <button class="nav-hamburger" id="burger"><span></span><span></span><span></span></button>
+  </nav>
+
+  <div class="page-header">
+    <span class="page-header-tag">Parlons-nous</span>
+    <h1>Nous <em style="color:var(--gold);font-style:italic">Contacter</em></h1>
+    <p>Notre équipe est disponible 24h/24 pour répondre à toutes vos questions.</p>
+  </div>
+
+  <div class="contact-layout">
+
+    <!-- Colonne gauche : infos + agents -->
+    <div>
+      <div class="contact-info-card" style="margin-bottom:24px">
+        <h3 class="contact-info-title">Informations de contact</h3>
+        <div class="contact-detail">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="contact-detail-label">Téléphone</div>
+            <div class="contact-detail-val"><a href="tel:+2250759567476" style="color:var(--cream)">+225 07 59 56 74 76</a></div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">✉️</div>
+          <div>
+            <div class="contact-detail-label">Email</div>
+            <div class="contact-detail-val"><a href="mailto:traoreclayere@gmail.com" style="color:var(--cream)">traoreclayere@gmail.com</a></div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-detail-label">Adresse</div>
+            <div class="contact-detail-val">Cocody Riviera, Abidjan<br/>Côte d'Ivoire</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agents rapides -->
+      <div class="contact-info-card">
+        <h3 class="contact-info-title" style="font-size:1.1rem;margin-bottom:20px">Contacter un agent directement</h3>
+        <div id="agents-quick"></div>
+      </div>
+    </div>
+
+    <!-- Colonne droite : formulaire -->
+    <div class="contact-form-card">
+      <span class="section-tag">Envoyez-nous un message</span>
+      <h2 class="section-title" style="margin-bottom:28px;margin-top:8px">Votre demande</h2>
+
+      <form id="contact-form" method="POST" action="{{ url_for('contact_post') }}">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom & Nom *</label>
+            <input type="text" name="nom" placeholder="Jean Dupont" required/>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" name="email" placeholder="jean@exemple.com" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" name="telephone" placeholder="+225 07 00 00 00"/>
+          </div>
+          <div class="form-group">
+            <label>Objet</label>
+            <select name="objet">
+              <option value="">Choisir…</option>
+              <option value="location">Location d'un bien</option>
+              <option value="achat">Achat d'un bien</option>
+              <option value="visite">Demande de visite</option>
+              <option value="info">Renseignements généraux</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Type de bien recherché</label>
+          <select name="type_bien">
+            <option value="">Tous types</option>
+            <option value="appartement">Appartement</option>
+            <option value="studio">Studio</option>
+            <option value="villa">Villa</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message *</label>
+          <textarea name="message" rows="5" placeholder="Décrivez votre projet ou votre demande…" required></textarea>
+        </div>
+        <button type="submit" class="btn-gold" style="width:100%;justify-content:center;padding:16px">
+          Envoyer le message →
+        </button>
+        <div class="form-success-msg" id="form-success">
+          ✅ Message envoyé ! Nous vous répondrons sous 24h.
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Carte / Map placeholder -->
+  <div style="padding:0 6% 100px">
+    <div style="background:var(--dark3);border:1px solid var(--border);border-radius:14px;
+                overflow:hidden;height:300px;display:flex;align-items:center;justify-content:center;
+                flex-direction:column;gap:12px">
+      <div style="font-size:2.5rem">🗺️</div>
+      <p style="color:var(--text-muted);font-size:0.9rem">Cocody Riviera, Abidjan — Intégrer Google Maps ici</p>
+      <a href="https://maps.google.com/?q=Cocody+Riviera+Abidjan" target="_blank"
+        class="btn-outline" style="font-size:0.82rem;padding:10px 22px">
+        Ouvrir dans Google Maps →
+      </a>
+    </div>
+  </div>
+
+  <!-- CHATBOT -->
+  <div class="chat-widget">
+    <button class="chat-trigger" id="chat-trigger">💬<span class="chat-dot"></span></button>
+    <div class="chat-tooltip">Besoin d'aide ?</div>
+    <div class="chat-window" id="chat-window">
+      <div class="chat-head">
+        <div class="chat-avatar">🏠</div>
+        <div class="chat-head-info"><strong>IvA — Assistant IvoryImmo</strong><span>● En ligne maintenant</span></div>
+        <button class="chat-close" id="chat-close">✕</button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-suggestions" id="chat-suggestions"></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" type="text" placeholder="Posez votre question…" autocomplete="off"/>
+        <button class="chat-send" id="chat-send">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Ivory<span>Immo</span></div>
+        <p>L'agence immobilière de référence en Côte d'Ivoire.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="{{ url_for('index') }}">Accueil</a></li>
+          <li><a href="{{ url_for('services') }}">Nos Biens</a></li>
+          <li><a href="{{ url_for('equipe') }}">Notre Équipe</a></li>
+          <li><a href="{{ url_for('contact_page') }}">Nous Contacter</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Types de biens</h4>
+        <ul>
+          <li><a href="{{ url_for('services') }}?type=appartement">Appartements</a></li>
+          <li><a href="{{ url_for('services') }}?type=studio">Studios</a></li>
+          <li><a href="{{ url_for('services') }}?type=villa">Villas</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+2250759567476">+225 07 59 56 74 76</a></li>
+          <li><a href="mailto:traoreclayere@gmail.com">traoreclayere@gmail.com</a></li>
+          <li><a>Abidjan, Côte d'Ivoire</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 IvoryImmo. Tous droits réservés.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">W</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/data.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+  <script>
+    // Agents en accès rapide
+    const agents = [
+      { name:"TRAORE Clayéré Abdoulaye",      role:"Directeur",      tel:"+225 07 59 56 74 76", img:"/static/uploads/photo_pro.png" },
+    
+    ];
+    document.getElementById('agents-quick').innerHTML = agents.map(a => `
+      <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)">
+        <img src="${a.img}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;
+             border:1px solid var(--border-gold)" alt="${a.name}"/>
+        <div style="flex:1">
+          <div style="font-size:0.88rem;color:var(--cream);font-weight:500">${a.name}</div>
+          <div style="font-size:0.75rem;color:var(--gold)">${a.role}</div>
+        </div>
+        <a href="tel:${a.tel.replace(/\s/g,'')}"
+           style="background:var(--gold-dim);border:1px solid var(--border-gold);color:var(--gold);
+                  padding:7px 14px;border-radius:8px;font-size:0.78rem;white-space:nowrap">
+          📞 Appeler
+        </a>
+      </div>`).join('');
+
+    // Soumission AJAX du formulaire
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      fetch('{{ url_for("contact_post") }}', { method:'POST', body: new FormData(this) })
+        .then(r => r.json())
+        .then(d => { if (d.success) showOk(); })
+        .catch(() => showOk()); // mode statique fallback
+      function showOk() {
+        const s = document.getElementById('form-success');
+        s.classList.add('show');
+        document.getElementById('contact-form').reset();
+        setTimeout(() => s.classList.remove('show'), 6000);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %}
+{% block title %}Paramètres{% endblock %}
+{% block page_title %}Paramètres du compte{% endblock %}
+
+{% block content %}
+
+{% if msg %}
+<div class="alert alert-{{ msg[0] }}">
+  {{ '✅' if msg[0] == 'success' else '⚠️' }} {{ msg[1] }}
+</div>
+{% endif %}
+
+<div class="settings-card">
+  <h3>🔐 Changer le mot de passe</h3>
+  <form method="POST" action="{{ url_for('admin_settings') }}">
+    <div class="form-group">
+      <label>Mot de passe actuel</label>
+      <input type="password" name="current_password" required placeholder="••••••••"/>
+    </div>
+    <div class="form-group">
+      <label>Nouveau mot de passe</label>
+      <input type="password" name="new_password" required
+             placeholder="8 caractères minimum" minlength="8"/>
+    </div>
+    <div class="form-group">
+      <label>Confirmer le nouveau mot de passe</label>
+      <input type="password" name="confirm_password" required placeholder="••••••••"/>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+<div class="settings-card" style="margin-top:24px">
+  <h3>ℹ️ Informations</h3>
+  <p style="color:var(--muted);font-size:0.88rem;line-height:1.7">
+    Connecté en tant que : <strong style="color:var(--cream)">{{ session.get('admin_username') }}</strong><br/>
+    Pour changer l'identifiant, modifiez directement la base de données SQLite.<br/>
+    La configuration email (SMTP) se fait via les variables d'environnement dans le fichier <code style="color:var(--gold)">.env</code>.
+  </p>
+</div>
+
+{% endblock %}

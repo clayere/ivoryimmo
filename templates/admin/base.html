@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Admin{% endblock %} — IvoryImmo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"/>
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ══════ SIDEBAR ══════ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text">Ivory<span>Immo</span></div>
+      <div class="logo-sub">Administration</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <a class="nav-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
+         href="{{ url_for('admin_dashboard') }}">
+        <span class="icon">📊</span> Tableau de bord
+      </a>
+
+      <div class="nav-section-label">Contenu</div>
+      <a class="nav-item {% if 'properties' in request.endpoint %}active{% endif %}"
+         href="{{ url_for('admin_properties') }}">
+        <span class="icon">🏠</span> Propriétés
+      </a>
+      <a class="nav-item {% if 'messages' in request.endpoint %}active{% endif %}"
+         href="{{ url_for('admin_messages') }}">
+        <span class="icon">✉️</span> Messages
+        {% if unread_count and unread_count > 0 %}
+        <span class="nav-badge">{{ unread_count }}</span>
+        {% endif %}
+      </a>
+
+      <div class="nav-section-label">Compte</div>
+      <a class="nav-item {% if request.endpoint == 'admin_settings' %}active{% endif %}"
+         href="{{ url_for('admin_settings') }}">
+        <span class="icon">⚙️</span> Paramètres
+      </a>
+      <a class="nav-item" href="{{ url_for('index') }}" target="_blank">
+        <span class="icon">🌐</span> Voir le site
+      </a>
+      <a class="nav-item" href="{{ url_for('admin_logout') }}"
+         style="color:var(--red);margin-top:8px">
+        <span class="icon">🚪</span> Déconnexion
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <strong>{{ session.get('admin_username','Admin') }}</strong>
+      <a href="{{ url_for('admin_settings') }}">Changer le mot de passe</a>
+    </div>
+  </aside>
+
+  <!-- ══════ MAIN ══════ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+      <div class="topbar-right">
+        {% block topbar_actions %}{% endblock %}
+        <a href="{{ url_for('admin_logout') }}" class="topbar-btn outline">Déconnexion</a>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=True) %}
+        {% for cat, msg in messages %}
+        <div class="alert alert-{{ 'success' if cat == 'success' else 'error' }}">
+          {{ '✅' if cat == 'success' else '⚠️' }} {{ msg }}
+        </div>
+        {% endfor %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</body>
+</html>

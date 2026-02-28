@@ -1,0 +1,24 @@
+# ============================================================
+# render.yaml — Déploiement automatique sur Render.com
+# ============================================================
+services:
+  - type: web
+    name: ivoryimmo
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2
+    plan: free
+
+    # Variables d'environnement à configurer dans le dashboard Render :
+    # SECRET_KEY, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true          # Render génère automatiquement une clé sécurisée
+      - key: MAIL_SERVER
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false                  # À saisir manuellement dans le dashboard
+      - key: MAIL_PASSWORD
+        sync: false                  # À saisir manuellement dans le dashboard

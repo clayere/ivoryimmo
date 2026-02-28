@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IvoryImmo — L'immobilier de prestige en Côte d'Ivoire</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar" id="navbar">
+    <a href="{{ url_for('index') }}" class="nav-logo">Ivory<span>Immo</span><sup>CI</sup></a>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}"    class="active">Accueil</a></li>
+      <li><a href="{{ url_for('services') }}">Nos Biens</a></li>
+      <li><a href="{{ url_for('equipe') }}">Notre Équipe</a></li>
+      <li><a href="{{ url_for('contact_page') }}" class="nav-cta">Nous Contacter</a></li>
+    </ul>
+    <button class="nav-hamburger" id="burger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="accueil">
+    <div class="hero-bg"></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <span class="hero-line"></span>
+        <span>Immobilier de prestige</span>
+      </div>
+      <h1 class="hero-title">
+        Trouvez votre<br/>
+        bien <em>idéal</em><br/>
+        en Côte d'Ivoire
+      </h1>
+      <p class="hero-sub">
+        Appartements, studios, villas — à louer ou à acheter dans les meilleurs quartiers d'Abidjan et alentours.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('services') }}" class="btn-gold">Explorer les biens →</a>
+        <a href="{{ url_for('contact_page') }}" class="btn-outline">Prendre rendez-vous</a>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-num">9+</span>
+        <span class="hero-stat-lbl">Biens disponibles</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">5+</span>
+        <span class="hero-stat-lbl">Agents experts</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">200+</span>
+        <span class="hero-stat-lbl">Clients satisfaits</span>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+      Défiler
+    </div>
+  </section>
+
+  <!-- ===== TYPES DE BIENS ===== -->
+  <section class="types-section">
+    <div style="text-align:center">
+      <span class="section-tag">Ce que nous proposons</span>
+      <h2 class="section-title">Explorez par type de bien</h2>
+    </div>
+    <div class="types-grid">
+      <a href="{{ url_for('services') }}?type=appartement" class="type-card">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800" alt="Appartements" loading="lazy"/>
+        <div class="type-card-overlay">
+          <div class="type-card-name">Appartements</div>
+          <div class="type-card-count" id="count-appart">— biens disponibles</div>
+          <span class="type-card-link">Voir les appartements <span>→</span></span>
+        </div>
+      </a>
+      <a href="{{ url_for('services') }}?type=studio" class="type-card">
+        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800" alt="Studios" loading="lazy"/>
+        <div class="type-card-overlay">
+          <div class="type-card-name">Studios</div>
+          <div class="type-card-count" id="count-studio">— biens disponibles</div>
+          <span class="type-card-link">Voir les studios <span>→</span></span>
+        </div>
+      </a>
+      <a href="{{ url_for('services') }}?type=villa" class="type-card">
+        <img src="https://images.unsplash.com/photo-1416331108676-a22ccb276e35?w=800" alt="Villas" loading="lazy"/>
+        <div class="type-card-overlay">
+          <div class="type-card-name">Villas</div>
+          <div class="type-card-count" id="count-villa">— biens disponibles</div>
+          <span class="type-card-link">Voir les villas <span>→</span></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== BIENS EN VEDETTE ===== -->
+  <section class="featured-section">
+    <div class="featured-header">
+      <div class="featured-intro">
+        <span class="section-tag">Sélection du moment</span>
+        <h2 class="section-title">Nos biens <em>en vedette</em></h2>
+        <div class="divider"></div>
+      </div>
+      <a href="{{ url_for('services') }}" class="btn-outline">Voir tout le catalogue →</a>
+    </div>
+    <div class="properties-grid" id="featured-grid"></div>
+  </section>
+
+  <!-- ===== TEAM PREVIEW ===== -->
+  <section class="team-preview-section" style="background:var(--dark2);border-top:1px solid var(--border)">
+    <div style="text-align:center">
+      <span class="section-tag">Nos experts</span>
+      <h2 class="section-title">Une équipe à votre service</h2>
+      <p style="color:var(--text-muted);margin-top:14px">Des conseillers passionnés qui vous accompagnent à chaque étape.</p>
+    </div>
+    <div class="team-grid" id="team-preview" style="display:flex; justify-content:center"></div>
+    <div style="text-align:center;margin-top:50px">
+      <a href="{{ url_for('equipe') }}" class="btn-outline">Rencontrer toute l'équipe →</a>
+    </div>
+  </section>
+
+  <!-- ===== POURQUOI NOUS ===== -->
+  <section style="padding:100px 6%">
+    <div style="text-align:center;margin-bottom:50px">
+      <span class="section-tag">Pourquoi nous choisir</span>
+      <h2 class="section-title">L'excellence <em>IvoryImmo</em></h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px">
+      <div class="value-card">
+        <div class="value-icon">🏆</div>
+        <div class="value-title">Expertise locale</div>
+        <div class="value-text">Plus de 10 ans d'expérience sur le marché immobilier ivoirien, avec une connaissance approfondie de chaque quartier.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🔒</div>
+        <div class="value-title">Transactions sécurisées</div>
+        <div class="value-text">Chaque transaction est encadrée juridiquement. Nos notaires partenaires garantissent la sécurité de votre investissement.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">⚡</div>
+        <div class="value-title">Réactivité totale</div>
+        <div class="value-text">Nos agents répondent sous 24h. Visites possibles 6j/7, selon vos disponibilités.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">💎</div>
+        <div class="value-title">Biens sélectionnés</div>
+        <div class="value-text">Chaque bien est soigneusement visité et validé par nos experts avant toute mise en ligne.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MODAL ===== -->
+  <div class="modal-backdrop" id="modal-backdrop" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-x" onclick="closeModal()">✕</button>
+      <div class="modal-img"><img id="m-img" src="" alt=""/></div>
+      <div class="modal-content">
+        <div class="modal-tags">
+          <span class="modal-tag modal-tag-type" id="m-type-tag"></span>
+          <span class="modal-tag modal-tag-mode" id="m-mode-tag"></span>
+        </div>
+        <div class="badge" id="m-badge" style="position:relative;top:auto;left:auto;display:inline-block;margin-bottom:12px"></div>
+        <h2 class="modal-title" id="m-title"></h2>
+        <p class="modal-loc"   id="m-loc"></p>
+        <div class="modal-feats" id="m-feats"></div>
+        <p class="modal-desc"  id="m-desc"></p>
+        <div class="modal-prices-row" id="m-prices"></div>
+        <button class="modal-cta" onclick="window.location.href='{{ url_for('contact_page') }}'">Nous contacter pour ce bien →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CHATBOT ===== -->
+  <div class="chat-widget">
+    <button class="chat-trigger" id="chat-trigger" aria-label="Assistant">
+      💬 <span class="chat-dot"></span>
+    </button>
+    <div class="chat-tooltip">Besoin d'aide ? Je suis là !</div>
+    <div class="chat-window" id="chat-window">
+      <div class="chat-head">
+        <div class="chat-avatar">🏠</div>
+        <div class="chat-head-info">
+          <strong>IvA — Assistant IvoryImmo</strong>
+          <span>● En ligne maintenant</span>
+        </div>
+        <button class="chat-close" id="chat-close">✕</button>
+      </div>
+      <div class="chat-messages"    id="chat-messages"></div>
+      <div class="chat-suggestions" id="chat-suggestions"></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" type="text" placeholder="Posez votre question…" autocomplete="off"/>
+        <button class="chat-send" id="chat-send">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Ivory<span>Immo</span></div>
+        <p>L'agence immobilière de référence en Côte d'Ivoire. Appartements, studios et villas à louer ou à acheter.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="{{ url_for('index') }}">Accueil</a></li>
+          <li><a href="{{ url_for('services') }}">Nos Biens</a></li>
+          <li><a href="{{ url_for('equipe') }}">Notre Équipe</a></li>
+          <li><a href="{{ url_for('contact_page') }}">Nous Contacter</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Types de biens</h4>
+        <ul>
+          <li><a href="{{ url_for('services') }}?type=appartement">Appartements</a></li>
+          <li><a href="{{ url_for('services') }}?type=studio">Studios</a></li>
+          <li><a href="{{ url_for('services') }}?type=villa">Villas</a></li>
+          <li><a href="{{ url_for('services') }}?mode=location">En location</a></li>
+          <li><a href="{{ url_for('services') }}?mode=vente">En vente</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+22500000000">+225 00 00 00 00</a></li>
+          <li><a href="mailto:contact@ivoryimmo.ci">contact@ivoryimmo.ci</a></li>
+          <li><a href="#">Abidjan, Côte d'Ivoire</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 IvoryImmo. Tous droits réservés.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">W</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/data.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+  <script>
+    // Biens en vedette (3 premiers)
+    document.getElementById('featured-grid').innerHTML =
+      PROPERTIES.slice(0, 3).map(buildCard).join('');
+
+    // Compteurs par type
+    document.getElementById('count-appart').textContent = countByType('appartement') + ' biens disponibles';
+    document.getElementById('count-studio').textContent = countByType('studio')      + ' biens disponibles';
+    document.getElementById('count-villa').textContent  = countByType('villa')       + ' biens disponibles';
+
+    // Aperçu équipe
+    const TEAM_PREVIEW = [
+      { name:"TRAORE Clayéré Abdoulaye",      role:"Directrice Générale",     bio:"15 ans d'expérience dans l'immobilier de luxe à Abidjan.",    img:"/static/uploads/photo_pro.png" },
+    ];
+    document.getElementById('team-preview').innerHTML = TEAM_PREVIEW.map(m => `
+      <div class="team-card">
+        <div class="team-photo"><img src="${m.img}" alt="${m.name}" loading="lazy"/></div>
+        <div class="team-info">
+          <div class="team-name">${m.name}</div>
+          <div class="team-role">${m.role}</div>
+          <div class="team-bio">${m.bio}</div>
+        </div>
+      </div>`).join('');
+
+    function buildCard(p) {
+      const fav = isFavorite(p.id);
+      const badgeCls  = p.modes.includes('location') && p.modes.includes('vente') ? 'badge-both'
+                      : p.modes.includes('vente') ? 'badge-sell' : 'badge-loc';
+      const badgeTxt  = p.modes.includes('location') && p.modes.includes('vente') ? 'Location & Vente'
+                      : p.modes.includes('vente') ? 'À vendre' : 'À louer';
+      return `
+        <div class="property-card" onclick="openModal(PROPERTIES.find(x=>x.id==${p.id}))">
+          <div class="card-img">
+            <img src="${p.image}" alt="${p.title}" loading="lazy"/>
+            <span class="badge ${badgeCls}">${badgeTxt}</span>
+            <span class="card-type">${p.type}</span>
+            <button class="card-fav ${fav?'active':''}" data-fav-id="${p.id}"
+              onclick="event.stopPropagation();toggleFavorite(${p.id})" title="Favoris">♡</button>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${p.title}</h3>
+            <p class="card-loc">📍 ${p.location}</p>
+            <div class="card-feats">
+              ${Object.entries(p.features).slice(0,3).map(([,v])=>`<span class="card-feat">• ${v}</span>`).join('')}
+            </div>
+            <div class="card-prices">
+              ${p.prix_location?`<div class="price-row"><span class="price-lbl">Location</span><span class="price-val">${p.prix_location}</span></div>`:''}
+              ${p.prix_vente   ?`<div class="price-row"><span class="price-lbl">Vente</span><span class="price-val">${p.prix_vente}</span></div>`:''}
+            </div>
+            <button class="card-btn">Voir les détails →</button>
+          </div>
+        </div>`;
+    }
+  </script>
+</body>
+</html>

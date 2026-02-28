@@ -1,0 +1,113 @@
+{% extends "admin/base.html" %}
+{% block title %}Messages{% endblock %}
+{% block page_title %}Messages reçus{% endblock %}
+
+{% block content %}
+<div class="table-card">
+  <div class="table-header">
+    <span class="table-title">{{ messages|length }} message{{ 's' if messages|length != 1 }}</span>
+    {% set unread = messages|selectattr('lu','equalto',0)|list|length %}
+    {% if unread > 0 %}
+    <span class="badge-table badge-unread">{{ unread }} non lu{{ 's' if unread > 1 }}</span>
+    {% endif %}
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th><th>Nom</th><th>Email</th><th>Téléphone</th>
+        <th>Objet</th><th>Type bien</th><th>Statut</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in messages %}
+      <tr>
+        <td style="font-size:0.78rem;color:var(--muted)">{{ m.created_at[:16] }}</td>
+        <td style="font-weight:{% if m.lu == 0 %}600{% else %}400{% endif %}">{{ m.nom }}</td>
+        <td>
+          <a href="mailto:{{ m.email }}" style="color:var(--gold);font-size:0.82rem">{{ m.email }}</a>
+        </td>
+        <td style="color:var(--muted);font-size:0.82rem">{{ m.telephone or '—' }}</td>
+        <td style="color:var(--muted)">{{ m.objet or '—' }}</td>
+        <td style="text-transform:capitalize;color:var(--muted)">{{ m.type_bien or '—' }}</td>
+        <td>
+          {% if m.lu == 0 %}
+          <span class="badge-table badge-unread">Non lu</span>
+          {% else %}
+          <span class="badge-table badge-read">Lu</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="acts">
+            <!-- Bouton afficher le message -->
+            <button class="act-btn edit"
+              onclick="showMsg('{{ m.nom|e }}','{{ m.email|e }}','{{ m.telephone or '' }}','{{ m.objet or '' }}','{{ m.created_at[:16] }}',`{{ m.message|e }}`)">
+              👁 Lire
+            </button>
+
+            {% if m.lu == 0 %}
+            <form method="POST" action="{{ url_for('admin_message_read', mid=m.id) }}" style="display:inline">
+              <button type="submit" class="act-btn success">✅ Marquer lu</button>
+            </form>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('admin_message_delete', mid=m.id) }}" style="display:inline"
+                  onsubmit="return confirm('Supprimer ce message ?')">
+              <button type="submit" class="act-btn danger">🗑</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">Aucun message reçu.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal lecture message -->
+<div id="msg-modal" style="display:none;position:fixed;inset:0;z-index:1000;
+     background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);
+     align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--dark3);border:1px solid var(--border-g);border-radius:16px;
+              max-width:600px;width:100%;padding:36px;position:relative">
+    <button onclick="closeMsg()"
+            style="position:absolute;top:16px;right:16px;background:none;border:none;
+                   color:var(--muted);font-size:1.2rem;cursor:pointer">✕</button>
+    <h3 style="color:var(--cream);margin-bottom:24px;font-size:1.1rem">📩 Message de <span id="m-nom"></span></h3>
+    <div class="msg-meta">
+      <div class="msg-meta-item"><label>Email</label><span id="m-email" style="color:var(--gold)"></span></div>
+      <div class="msg-meta-item"><label>Téléphone</label><span id="m-tel"></span></div>
+      <div class="msg-meta-item"><label>Objet</label><span id="m-objet"></span></div>
+      <div class="msg-meta-item"><label>Date</label><span id="m-date" style="color:var(--muted)"></span></div>
+    </div>
+    <div class="msg-body" id="m-body"></div>
+    <div style="margin-top:20px;text-align:right">
+      <a id="m-reply" href="#" class="btn-primary" style="display:inline-block;padding:10px 20px">
+        ✉️ Répondre par email
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showMsg(nom, email, tel, objet, date, body) {
+    document.getElementById('m-nom').textContent   = nom;
+    document.getElementById('m-email').textContent = email;
+    document.getElementById('m-tel').textContent   = tel || '—';
+    document.getElementById('m-objet').textContent = objet || '—';
+    document.getElementById('m-date').textContent  = date;
+    document.getElementById('m-body').textContent  = body;
+    document.getElementById('m-reply').href = `mailto:${email}?subject=Re: ${objet}&body=Bonjour ${nom},%0A%0A`;
+    const modal = document.getElementById('msg-modal');
+    modal.style.display = 'flex';
+  }
+  function closeMsg() {
+    document.getElementById('msg-modal').style.display = 'none';
+  }
+  document.getElementById('msg-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeMsg();
+  });
+</script>
+{% endblock %}

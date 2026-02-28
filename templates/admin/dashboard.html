@@ -1,0 +1,121 @@
+{% extends "admin/base.html" %}
+{% block title %}Tableau de bord{% endblock %}
+{% block page_title %}Tableau de bord{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('admin_property_new') }}" class="topbar-btn">+ Ajouter un bien</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Stat cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-label">Biens actifs</div>
+    <div class="stat-card-value">{{ stats.properties }}</div>
+    <div class="stat-card-icon">🏠</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">En location</div>
+    <div class="stat-card-value">{{ stats.location }}</div>
+    <div class="stat-card-icon">🔑</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">En vente</div>
+    <div class="stat-card-value">{{ stats.vente }}</div>
+    <div class="stat-card-icon">💰</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">Messages reçus</div>
+    <div class="stat-card-value">{{ stats.messages }}</div>
+    <div class="stat-card-icon">✉️</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">Non lus</div>
+    <div class="stat-card-value" style="color:{% if stats.unread > 0 %}var(--red){% else %}var(--green){% endif %}">
+      {{ stats.unread }}
+    </div>
+    <div class="stat-card-icon">📬</div>
+  </div>
+</div>
+
+<!-- Two-column layout -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+
+  <!-- Recent messages -->
+  <div class="table-card">
+    <div class="table-header">
+      <span class="table-title">Derniers messages</span>
+      <a href="{{ url_for('admin_messages') }}" class="table-action">Voir tout →</a>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th><th>Objet</th><th>Date</th><th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in recent_msgs %}
+        <tr>
+          <td>{{ m.nom }}</td>
+          <td style="color:var(--muted)">{{ m.objet or '—' }}</td>
+          <td style="color:var(--muted);font-size:0.78rem">{{ m.created_at[:10] }}</td>
+          <td>
+            {% if m.lu == 0 %}
+            <span class="badge-table badge-unread">Non lu</span>
+            {% else %}
+            <span class="badge-table badge-read">Lu</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">Aucun message</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Recent properties -->
+  <div class="table-card">
+    <div class="table-header">
+      <span class="table-title">Derniers biens ajoutés</span>
+      <a href="{{ url_for('admin_properties') }}" class="table-action">Voir tout →</a>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Titre</th><th>Type</th><th>Modes</th><th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in recent_props %}
+        <tr>
+          <td style="font-weight:500">{{ p.title[:28] }}{% if p.title|length > 28 %}…{% endif %}</td>
+          <td style="text-transform:capitalize;color:var(--muted)">{{ p.type }}</td>
+          <td>
+            {% if 'location' in p.modes and 'vente' in p.modes %}
+              <span class="badge-table badge-both">Loc & Vente</span>
+            {% elif 'vente' in p.modes %}
+              <span class="badge-table badge-sell">Vente</span>
+            {% else %}
+              <span class="badge-table badge-loc">Location</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if p.disponible %}
+            <span class="badge-table badge-read">Actif</span>
+            {% else %}
+            <span class="badge-table badge-off">Masqué</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">Aucun bien</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

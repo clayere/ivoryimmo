@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nos Biens — IvoryImmo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <a href="{{ url_for('index') }}" class="nav-logo">Ivory<span>Immo</span><sup>CI</sup></a>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('index') }}">Accueil</a></li>
+      <li><a href="{{ url_for('services') }}" class="active">Nos Biens</a></li>
+      <li><a href="{{ url_for('equipe') }}">Notre Équipe</a></li>
+      <li><a href="{{ url_for('contact_page') }}" class="nav-cta">Nous Contacter</a></li>
+    </ul>
+    <button class="nav-hamburger" id="burger"><span></span><span></span><span></span></button>
+  </nav>
+
+  <div class="page-header">
+    <span class="page-header-tag">Catalogue complet</span>
+    <h1>Nos Biens Disponibles</h1>
+    <p>Explorez notre sélection d'appartements, studios et villas à louer ou à acheter.</p>
+  </div>
+
+  <section class="services-section">
+
+    <!-- Barre de recherche avancée -->
+    <div class="search-bar-full">
+      <input type="text" id="search-input" placeholder="🔍  Rechercher par nom, quartier…"/>
+      <select id="sel-type">
+        <option value="all">Tous les types</option>
+        <option value="appartement">Appartements</option>
+        <option value="studio">Studios</option>
+        <option value="villa">Villas</option>
+      </select>
+      <select id="sel-mode">
+        <option value="all">Location & Vente</option>
+        <option value="location">Location uniquement</option>
+        <option value="vente">Vente uniquement</option>
+      </select>
+      <select id="sel-sort">
+        <option value="default">Trier par défaut</option>
+        <option value="price-asc">Prix croissant</option>
+        <option value="price-desc">Prix décroissant</option>
+      </select>
+      <button class="btn-gold" onclick="applyFilters()">Rechercher</button>
+    </div>
+
+    <!-- Pills de filtres rapides -->
+    <div class="filters-bar">
+      <button class="filter-pill active" data-type="all">Tous</button>
+      <button class="filter-pill" data-type="appartement">Appartements</button>
+      <button class="filter-pill" data-type="studio">Studios</button>
+      <button class="filter-pill" data-type="villa">Villas</button>
+      <span class="filter-sep"></span>
+      <button class="filter-pill" data-mode="all">Location & Vente</button>
+      <button class="filter-pill" data-mode="location">Location</button>
+      <button class="filter-pill" data-mode="vente">Vente</button>
+    </div>
+
+    <p class="results-count" id="results-count"></p>
+    <div class="properties-grid" id="props-grid"></div>
+    <div class="pagination" id="pagination"></div>
+  </section>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" id="modal-backdrop" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-x" onclick="closeModal()">✕</button>
+      <div class="modal-img"><img id="m-img" src="" alt=""/></div>
+      <div class="modal-content">
+        <div class="modal-tags">
+          <span class="modal-tag modal-tag-type" id="m-type-tag"></span>
+          <span class="modal-tag modal-tag-mode" id="m-mode-tag"></span>
+        </div>
+        <div class="badge" id="m-badge" style="position:relative;top:auto;left:auto;display:inline-block;margin-bottom:12px"></div>
+        <h2 class="modal-title" id="m-title"></h2>
+        <p class="modal-loc"   id="m-loc"></p>
+        <div class="modal-feats" id="m-feats"></div>
+        <p class="modal-desc"  id="m-desc"></p>
+        <div class="modal-prices-row" id="m-prices"></div>
+        <button class="modal-cta" onclick="window.location.href='{{ url_for('contact_page') }}'">Nous contacter pour ce bien →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHATBOT -->
+  <div class="chat-widget">
+    <button class="chat-trigger" id="chat-trigger">💬<span class="chat-dot"></span></button>
+    <div class="chat-tooltip">Besoin d'aide ?</div>
+    <div class="chat-window" id="chat-window">
+      <div class="chat-head">
+        <div class="chat-avatar">🏠</div>
+        <div class="chat-head-info"><strong>IvA — Assistant IvoryImmo</strong><span>● En ligne maintenant</span></div>
+        <button class="chat-close" id="chat-close">✕</button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-suggestions" id="chat-suggestions"></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" type="text" placeholder="Posez votre question…" autocomplete="off"/>
+        <button class="chat-send" id="chat-send">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Ivory<span>Immo</span></div>
+        <p>L'agence immobilière de référence en Côte d'Ivoire.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="{{ url_for('index') }}">Accueil</a></li>
+          <li><a href="{{ url_for('services') }}">Nos Biens</a></li>
+          <li><a href="{{ url_for('equipe') }}">Notre Équipe</a></li>
+          <li><a href="{{ url_for('contact_page') }}">Nous Contacter</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Types</h4>
+        <ul>
+          <li><a href="?type=appartement">Appartements</a></li>
+          <li><a href="?type=studio">Studios</a></li>
+          <li><a href="?type=villa">Villas</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+22500000000">+225 00 00 00 00</a></li>
+          <li><a href="mailto:contact@ivoryimmo.ci">contact@ivoryimmo.ci</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 IvoryImmo. Tous droits réservés.</p>
+      <div class="footer-socials">
+        <a href="#" class="social-btn">f</a>
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">W</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/data.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+  <script>
+    let activeType = 'all', activeMode = 'all', searchQuery = '';
+    let currentPage = 1;
+    const PER_PAGE = 6;
+
+    // Lire les paramètres URL
+    (function () {
+      const p = new URLSearchParams(window.location.search);
+      const t = p.get('type'), m = p.get('mode');
+      if (t) { activeType = t; document.getElementById('sel-type').value = t; }
+      if (m) { activeMode = m; document.getElementById('sel-mode').value = m; }
+      updatePills();
+    })();
+
+    function updatePills() {
+      document.querySelectorAll('.filter-pill[data-type]').forEach(b =>
+        b.classList.toggle('active', b.dataset.type === activeType));
+      document.querySelectorAll('.filter-pill[data-mode]').forEach(b =>
+        b.classList.toggle('active', b.dataset.mode === activeMode));
+    }
+
+    document.querySelectorAll('.filter-pill[data-type]').forEach(btn =>
+      btn.addEventListener('click', () => {
+        activeType = btn.dataset.type;
+        document.getElementById('sel-type').value = activeType;
+        updatePills(); currentPage = 1; render();
+      }));
+
+    document.querySelectorAll('.filter-pill[data-mode]').forEach(btn =>
+      btn.addEventListener('click', () => {
+        activeMode = btn.dataset.mode;
+        document.getElementById('sel-mode').value = activeMode;
+        updatePills(); currentPage = 1; render();
+      }));
+
+    document.getElementById('search-input').addEventListener('input', function () {
+      searchQuery = this.value.toLowerCase(); currentPage = 1; render();
+    });
+
+    function applyFilters() {
+      activeType  = document.getElementById('sel-type').value;
+      activeMode  = document.getElementById('sel-mode').value;
+      searchQuery = document.getElementById('search-input').value.toLowerCase();
+      updatePills(); currentPage = 1; render();
+    }
+
+    function getFiltered() {
+      let list = PROPERTIES.filter(p => {
+        const tOk = activeType === 'all' || p.type === activeType;
+        const mOk = activeMode === 'all' || p.modes.includes(activeMode);
+        const qOk = !searchQuery ||
+          p.title.toLowerCase().includes(searchQuery) ||
+          p.location.toLowerCase().includes(searchQuery);
+        return tOk && mOk && qOk;
+      });
+      const sort = document.getElementById('sel-sort').value;
+      if (sort === 'price-asc')  list.sort((a,b) => toNum(a) - toNum(b));
+      if (sort === 'price-desc') list.sort((a,b) => toNum(b) - toNum(a));
+      return list;
+    }
+
+    function toNum(p) {
+      return parseInt((p.prix_location || p.prix_vente || '0').replace(/\D/g,'')) || 0;
+    }
+
+    function buildCard(p, idx) {
+      const fav = isFavorite(p.id);
+      const bc  = p.modes.includes('location') && p.modes.includes('vente') ? 'badge-both'
+                : p.modes.includes('vente') ? 'badge-sell' : 'badge-loc';
+      const bt  = p.modes.includes('location') && p.modes.includes('vente') ? 'Location & Vente'
+                : p.modes.includes('vente') ? 'À vendre' : 'À louer';
+      return `
+        <div class="property-card" style="animation-delay:${(idx||0)*0.06}s"
+             onclick="openModal(PROPERTIES.find(x=>x.id==${p.id}))">
+          <div class="card-img">
+            <img src="${p.image}" alt="${p.title}" loading="lazy"/>
+            <span class="badge ${bc}">${bt}</span>
+            <span class="card-type">${p.type}</span>
+            <button class="card-fav ${fav?'active':''}" data-fav-id="${p.id}"
+              onclick="event.stopPropagation();toggleFavorite(${p.id})">♡</button>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${p.title}</h3>
+            <p class="card-loc">📍 ${p.location}</p>
+            <div class="card-feats">
+              ${Object.entries(p.features).slice(0,3).map(([,v])=>`<span class="card-feat">• ${v}</span>`).join('')}
+            </div>
+            <div class="card-prices">
+              ${p.prix_location?`<div class="price-row"><span class="price-lbl">Location</span><span class="price-val">${p.prix_location}</span></div>`:''}
+              ${p.prix_vente   ?`<div class="price-row"><span class="price-lbl">Vente</span><span class="price-val">${p.prix_vente}</span></div>`:''}
+            </div>
+            <button class="card-btn">Voir les détails →</button>
+          </div>
+        </div>`;
+    }
+
+    function renderPagination(total) {
+      const pages = Math.ceil(total / PER_PAGE);
+      const pg = document.getElementById('pagination');
+      if (pages <= 1) { pg.innerHTML = ''; return; }
+      let h = `<button class="page-btn ${currentPage===1?'disabled':''}" onclick="goPage(${currentPage-1})">‹</button>`;
+      for (let i=1;i<=pages;i++)
+        h += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      h += `<button class="page-btn ${currentPage===pages?'disabled':''}" onclick="goPage(${currentPage+1})">›</button>`;
+      pg.innerHTML = h;
+    }
+
+    function goPage(n) {
+      const filtered = getFiltered();
+      const pages = Math.ceil(filtered.length / PER_PAGE);
+      if (n<1||n>pages) return;
+      currentPage = n; render();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function render() {
+      const filtered = getFiltered();
+      const total    = filtered.length;
+      const slice    = filtered.slice((currentPage-1)*PER_PAGE, currentPage*PER_PAGE);
+      const cntEl    = document.getElementById('results-count');
+
+      if (total === 0) {
+        cntEl.innerHTML = 'Aucun bien trouvé.';
+        document.getElementById('props-grid').innerHTML =
+          `<div class="no-results"><div style="font-size:3rem">🔍</div><p>Aucun bien ne correspond à votre recherche.</p></div>`;
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+      cntEl.innerHTML = `<strong>${total}</strong> bien${total>1?'s':''} trouvé${total>1?'s':''}`;
+      document.getElementById('props-grid').innerHTML = slice.map((p,i)=>buildCard(p,i)).join('');
+      renderPagination(total);
+      refreshFavButtons();
+    }
+
+    render();
+  </script>
+</body>
+</html>

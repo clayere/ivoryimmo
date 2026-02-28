@@ -1,0 +1,90 @@
+{% extends "admin/base.html" %}
+{% block title %}Propriétés{% endblock %}
+{% block page_title %}Gestion des propriétés{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('admin_property_new') }}" class="topbar-btn">+ Ajouter un bien</a>
+{% endblock %}
+
+{% block content %}
+<div class="table-card">
+  <div class="table-header">
+    <span class="table-title">{{ properties|length }} propriété{{ 's' if properties|length != 1 }}</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Photo</th>
+        <th>Titre</th>
+        <th>Type</th>
+        <th>Localisation</th>
+        <th>Modes</th>
+        <th>Prix location</th>
+        <th>Prix vente</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in properties %}
+      <tr>
+        <td>
+          {% if p.image %}
+          <img class="thumb" src="{{ p.image }}" alt="{{ p.title }}"
+               onerror="this.src='https://via.placeholder.com/46x34?text=?'"/>
+          {% else %}
+          <div style="width:46px;height:34px;background:var(--dark4);border-radius:6px;
+                      display:flex;align-items:center;justify-content:center;font-size:1.1rem">🏠</div>
+          {% endif %}
+        </td>
+        <td style="font-weight:500;max-width:180px">
+          {{ p.title[:30] }}{% if p.title|length > 30 %}…{% endif %}
+        </td>
+        <td style="text-transform:capitalize;color:var(--muted)">{{ p.type }}</td>
+        <td style="color:var(--muted);font-size:0.82rem">{{ p.location[:22] }}{% if p.location|length > 22 %}…{% endif %}</td>
+        <td>
+          {% if 'location' in p.modes and 'vente' in p.modes %}
+            <span class="badge-table badge-both">Loc & Vente</span>
+          {% elif 'vente' in p.modes %}
+            <span class="badge-table badge-sell">Vente</span>
+          {% else %}
+            <span class="badge-table badge-loc">Location</span>
+          {% endif %}
+        </td>
+        <td style="font-size:0.82rem;color:var(--gold)">{{ p.prix_location or '—' }}</td>
+        <td style="font-size:0.82rem;color:var(--gold)">{{ p.prix_vente or '—' }}</td>
+        <td>
+          {% if p.disponible %}
+          <span class="badge-table badge-read">Actif</span>
+          {% else %}
+          <span class="badge-table badge-off">Masqué</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="acts">
+            <a href="{{ url_for('admin_property_edit', pid=p.id) }}" class="act-btn edit">✏️ Modifier</a>
+
+            <form method="POST" action="{{ url_for('admin_property_toggle', pid=p.id) }}" style="display:inline">
+              <button type="submit" class="act-btn success">
+                {{ '🙈 Masquer' if p.disponible else '👁 Afficher' }}
+              </button>
+            </form>
+
+            <form method="POST" action="{{ url_for('admin_property_delete', pid=p.id) }}" style="display:inline"
+                  onsubmit="return confirm('Supprimer ce bien définitivement ?')">
+              <button type="submit" class="act-btn danger">🗑 Supprimer</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">
+          Aucune propriété. <a href="{{ url_for('admin_property_new') }}" style="color:var(--gold)">Ajouter la première →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
