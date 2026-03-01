@@ -1,0 +1,10 @@
+le lien du site : https://ivoryimmo.onrender.com/
+
+en local on a:
+utilisateur: http://localhost:5000/
+administrateur: http://localhost:5000/admin/
+
+Pour le mode administrateur:
+
+Login: admin
+Password: ivoryimmo2025
