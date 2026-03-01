@@ -556,8 +556,10 @@ def admin_settings():
 
 
 # ══════════════════════════════════════════════════════════
-if __name__ == "__main__":
+# Initialiser la DB au démarrage (important pour Render/production)
+with app.app_context():
     init_db()
+
+if __name__ == "__main__":
     print("🏠 IvoryImmo v4  →  http://localhost:5000")
-    print("🔐 Admin panel   →  http://localhost:5000/admin")
     app.run(debug=True, host="0.0.0.0", port=5000)
