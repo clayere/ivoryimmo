@@ -245,12 +245,32 @@
     </div>
   </footer>
 
-  <script src="{{ url_for('static', filename='js/data.js') }}"></script>
   <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
   <script>
-    // Biens en vedette (3 premiers)
-    document.getElementById('featured-grid').innerHTML =
-      PROPERTIES.slice(0, 3).map(buildCard).join('');
+    let PROPERTIES = [];
+
+    // Charger les biens depuis la base de données
+    fetch('/api/properties')
+      .then(r => r.json())
+      .then(data => {
+        PROPERTIES = data.map(p => ({
+          ...p,
+          features: {
+            "Surface":  p.surface  || '—',
+            "Pièces":   p.pieces   || '—',
+            "Étage":    p.etage    || '—',
+            "Parking":  p.parking  || '—'
+          }
+        }));
+        // Biens en vedette (3 premiers)
+        document.getElementById('featured-grid').innerHTML =
+          PROPERTIES.slice(0, 3).map(buildCard).join('');
+        // Compteurs par type
+        document.getElementById('count-appart').textContent = PROPERTIES.filter(p => p.type === 'appartement').length + ' biens disponibles';
+        document.getElementById('count-studio').textContent = PROPERTIES.filter(p => p.type === 'studio').length + ' biens disponibles';
+        document.getElementById('count-villa').textContent  = PROPERTIES.filter(p => p.type === 'villa').length + ' biens disponibles';
+        refreshFavButtons();
+      });PROPERTIES.slice(0, 3).map(buildCard).join('');
 
     // Compteurs par type
     document.getElementById('count-appart').textContent = countByType('appartement') + ' biens disponibles';

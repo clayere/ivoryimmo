@@ -148,10 +148,26 @@
     </div>
   </footer>
 
-  <script src="{{ url_for('static', filename='js/data.js') }}"></script>
   <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
   <script>
+    let PROPERTIES = [];
     let activeType = 'all', activeMode = 'all', searchQuery = '';
+
+    // Charger les biens depuis la base de données
+    fetch('/api/properties')
+      .then(r => r.json())
+      .then(data => {
+        PROPERTIES = data.map(p => ({
+          ...p,
+          features: {
+            "Surface":  p.surface  || '—',
+            "Pièces":   p.pieces   || '—',
+            "Étage":    p.etage    || '—',
+            "Parking":  p.parking  || '—'
+          }
+        }));
+        render();
+      });
     let currentPage = 1;
     const PER_PAGE = 6;
 
